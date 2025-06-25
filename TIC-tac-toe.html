@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tic Tac Toe</title>
+  <style>
+    body { font-family: Arial; text-align: center; margin-top: 40px; }
+    #board { display: inline-block; }
+    .cell {
+      width: 55px; height: 55px;
+      display: inline-block;
+      border: 2px solid #444;
+      border-radius: 15px; /* Rounded corners */
+      background: #f2f2f2;
+      font-size: 2em;
+      line-height: 55px;
+      margin: 5px;
+      cursor: pointer;
+      vertical-align: top;
+      transition: background 0.2s;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    .cell:hover { background: #e0eaff; }
+    #msg { margin: 18px; font-size: 1.1em; min-height: 1.5em; }
+    button {
+      padding: 8px 18px;
+      border-radius: 10px;
+      border: none;
+      background: #4287f5;
+      color: #fff;
+      font-size: 1em;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    @media (max-width: 500px) {
+      .cell { width: 38px; height: 38px; font-size: 1.3em; line-height: 38px; }
+    }
+  </style>
+</head>
+<body>
+  <h2>Tic Tac Toe</h2>
+  <div id="board"></div>
+  <div id="msg"></div>
+  <button onclick="reset()">Restart</button>
+  <script>
+    var board = Array(9).fill('');
+    var player = 'X', computer = 'O', gameOver = false;
+    var msg = document.getElementById('msg');
+    var boardDiv = document.getElementById('board');
+
+    function draw() {
+      boardDiv.innerHTML = '';
+      for (let i = 0; i < 9; i++) {
+        let c = document.createElement('div');
+        c.className = 'cell';
+        c.textContent = board[i];
+        c.onclick = () => playerMove(i);
+        boardDiv.appendChild(c);
+        if (i % 3 === 2) boardDiv.appendChild(document.createElement('br'));
+      }
+    }
+
+    function playerMove(i) {
+      if (gameOver || board[i]) return;
+      board[i] = player;
+      draw();
+      if (check(player)) end('great you win');
+      else if (board.every(x => x)) end("let's try again");
+      else setTimeout(computerMove, 400);
+    }
+
+    function computerMove() {
+      if (gameOver) return;
+      let empty = board.map((v, i) => v ? null : i).filter(i => i !== null);
+      let move = empty[Math.floor(Math.random() * empty.length)];
+      board[move] = computer;
+      draw();
+      if (check(computer)) end('better luck next time');
+      else if (board.every(x => x)) end("let's try again");
+    }
+
+    function check(s) {
+      let w = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+      ];
+      return w.some(a => a.every(i => board[i] === s));
+    }
+
+    function end(m) {
+      gameOver = true;
+      msg.textContent = m;
+    }
+
+    function reset() {
+      board = Array(9).fill('');
+      gameOver = false;
+      msg.textContent = '';
+      draw();
+    }
+
+    draw();
+  </script>
+</body>
+</html>
